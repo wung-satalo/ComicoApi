@@ -1,12 +1,22 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using ComicoApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+var connectionString = new NpgsqlConnectionStringBuilder(databaseUrl)
+{
+    SslMode = SslMode.Require,
+    TrustServerCertificate = true
+}.ConnectionString;
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // รับ PORT จาก Railway
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
@@ -17,6 +27,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
     db.Database.Migrate();
     await DbSeeder.SeedAsync(db);
 }
