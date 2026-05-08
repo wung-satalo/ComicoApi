@@ -14,9 +14,11 @@ public static class DbSeeder
             new() { ImageUrl = "https://farm5.staticflickr.com/4905/46683324341_660f16ed0f_o.png" },
             new() { ImageUrl = "https://farm5.staticflickr.com/4854/32808153198_29f403338a_o.png" },
             new() { ImageUrl = "https://farm8.staticflickr.com/7854/39718376383_2ef44143ff_o.png" },
+
+            new() { ImageUrl = "https://art.ngfiles.com/images/6046000/6046288_1214706_kitcarr02_untitled-6046288.5a5d261dd73dc34aaed120e65f456a14.webp?f1726612387"},
         };
         db.Banners.AddRange(banners);
-        db.SaveChanges();
+        
         // --- Comics ---
         var comics = new List<Comic>
         {
