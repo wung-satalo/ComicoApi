@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using ComicoApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,8 +9,28 @@ builder.Services.AddOpenApi();
 
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
+if (string.IsNullOrEmpty(databaseUrl))
+{
+    throw new Exception("DATABASE_URL is missing");
+}
+
+var uri = new Uri(databaseUrl);
+
+var userInfo = uri.UserInfo.Split(':');
+
+var connectionString = new NpgsqlConnectionStringBuilder
+{
+    Host = uri.Host,
+    Port = uri.Port,
+    Username = userInfo[0],
+    Password = userInfo[1],
+    Database = uri.AbsolutePath.Trim('/'),
+    SslMode = SslMode.Require,
+    TrustServerCertificate = true
+}.ToString();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(databaseUrl));
+    options.UseNpgsql(connectionString));
 
 // Railway PORT
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
