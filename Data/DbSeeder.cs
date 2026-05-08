@@ -15,7 +15,7 @@ public static class DbSeeder
             new() { ImageUrl = "https://farm5.staticflickr.com/4854/32808153198_29f403338a_o.png" },
             new() { ImageUrl = "https://farm8.staticflickr.com/7854/39718376383_2ef44143ff_o.png" },
 
-            new() { ImageUrl = "https://thumbor.4gamers.com.tw/IxpSaXGolHxtvhVqHuBqlDKoiF4=/adaptive-fit-in/1600x1600/filters:format(avif):quality(60):no_upscale()/https%3A%2F%2Fimg.4gamers.com.tw%2Fckfinder-th%2Fimage2%2Fauto%2F2024-06%2FScreenshot_1-240625-151201.png%3FversionId%3DHLlKKQqVSMLCUzb8.wj55dniworO.HA5" },
+            new() { ImageUrl = "https://picsum.photos/1200/500" },
         };
         db.Banners.AddRange(banners);
         db.SaveChanges();
