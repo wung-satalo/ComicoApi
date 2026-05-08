@@ -7,27 +7,32 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+string connectionString;
+
+// Railway
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-if (string.IsNullOrEmpty(databaseUrl))
+if (!string.IsNullOrEmpty(databaseUrl))
 {
-    throw new Exception("DATABASE_URL is missing");
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':');
+
+    connectionString = new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port,
+        Username = userInfo[0],
+        Password = userInfo[1],
+        Database = uri.AbsolutePath.Trim('/'),
+        SslMode = SslMode.Require
+    }.ToString();
 }
-
-var uri = new Uri(databaseUrl);
-
-var userInfo = uri.UserInfo.Split(':');
-
-var connectionString = new NpgsqlConnectionStringBuilder
+else
 {
-    Host = uri.Host,
-    Port = uri.Port,
-    Username = userInfo[0],
-    Password = userInfo[1],
-    Database = uri.AbsolutePath.Trim('/'),
-    SslMode = SslMode.Require,
-    TrustServerCertificate = true
-}.ToString();
+    // Local PostgreSQL
+    connectionString = builder.Configuration
+        .GetConnectionString("DefaultConnection")!;
+}
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
